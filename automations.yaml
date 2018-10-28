@@ -1,0 +1,65 @@
+#  # IF: { sun.sun goes under horizon } THEN: { set theme to night mode }
+- id: theme_automatic
+  alias: Automatic Theme Change
+  trigger:
+    - platform: homeassistant
+      event: start
+    - platform: state
+      entity_id: sun.sun
+      to: above_horizon
+    - platform: state
+      entity_id: sun.sun
+      to: below_horizon
+  action:
+    - service_template: frontend.set_theme
+      data_template:
+        name: >
+          {% if states.sun.sun.state == "above_horizon" %}
+            light_green
+          {% else %}
+            dark_green
+          {% endif %}
+          
+- id: tv_on
+  alias: TV aan
+  trigger:
+    - platform: state
+      entity_id: media_player.ziggo_mediabox_xl
+      to: 'playing'
+      from: 'off'
+    - platform: state
+      entity_id: media_player.ziggo_mediabox_xl
+      to: 'playing'
+      from: 'idle'
+  action:
+    - service: media_player.turn_on
+      entity_id: media_player.samsungtv
+    - service: media_player.turn_on
+      entity_id: media_player.harman_kardon_avr
+    - delay: '00:00:05'
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.harman_kardon_avr
+        source: STB
+        
+- id: xbox_on
+  alias: Xbox aan
+  trigger:
+    - platform: state
+      entity_id: media_player.xboxone
+      to: 'playing'
+      from: 'off'
+    - platform: state
+      entity_id: media_player.xboxone
+      to: 'playing'
+      from: 'idle'
+  action:
+    - service: media_player.turn_on
+      entity_id: media_player.samsungtv
+    - service: media_player.turn_on
+      entity_id: media_player.harman_kardon_avr
+    - delay: '00:00:05'
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.harman_kardon_avr
+        source: Cable Sat
