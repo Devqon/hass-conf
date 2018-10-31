@@ -1,0 +1,53 @@
+- platform: samsungtv
+  host: !secret ip_samsung_tv
+  mac: !secret mac_samsung_tv
+  
+- platform: xboxone
+  device: !secret xbox_id
+  name: Xbox
+  
+- platform: harman_kardon_avr
+  host: !secret ip_avr
+  
+- platform: ziggo_mediabox_xl
+  host: !secret ip_horizon
+  name: Horizon
+  
+- platform: spotify
+  name: Spotify
+  client_id: !secret spotify_client_id
+  client_secret: !secret spotify_client_secret
+  
+- platform: universal
+  name: Uni
+  children:
+  - media_player.harman_kardon_avr
+  - media_player.samsungtv
+  - media_player.ziggo_mediabox_xl
+  commands:
+    turn_on:
+      service: media_player.turn_on
+      data:
+        entity_id: media_player.harman_kardon_avr
+    turn_off:
+      service: media_player.turn_off
+      data:
+        entity_id: media_player.harman_kardon_avr
+    volume_up:
+      service: media_player.volume_up
+      data:
+        entity_id: media_player.harman_kardon_avr
+    volume_down:
+      service: media_player.volume_down
+      data:
+        entity_id: media_player.harman_kardon_avr
+    volume_mute:
+      service: media_player.volume_mute
+      data:
+        entity_id: media_player.harman_kardon_avr
+  attributes:
+    state: media_player.harman_kardon_avr|state
+    is_volume_muted: media_player.harman_kardon_avr|is_volume_muted
+    volume_level: media_player.harman_kardon_avr|volume_level
+    source: media_player.harman_kardon_avr|source
+    source_list: media_player.harman_kardon_avr|source_list

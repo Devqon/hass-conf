@@ -20,6 +20,8 @@ http:
 # Enables the frontend
 frontend:
   themes: !include themes.yaml
+  extra_html_url:
+  - /local/custom_ui/state-card-floorplan.html
 
 # Enables configuration UI
 config:
@@ -41,6 +43,10 @@ panel_iframe:
     title: Pi-hole
     icon: mdi:block-helper
     url: !secret url_pihole
+  calendar:
+    title: Kalender
+    icon: mdi:calendar
+    url: !secret url_calendar
 
 # Checks for available updates
 # Note: This component will send some information about your system to
@@ -69,29 +75,22 @@ map:
 # Track the sun
 sun:
 
-# Weather prediction
-sensor:
-  - platform: yr
+weather:
+  - platform: buienradar
+    name: buienradar
+
+sensor: !include sensors.yaml
 
 # Text to speech
 tts:
   - platform: google
   
-media_player:
-  - platform: samsungtv
-    host: !secret ip_samsung_tv
-    mac: !secret mac_samsung_tv
-  - platform: xboxone
-    device: !secret xbox_id
-    name: Xbox
-  - platform: harman_kardon_avr
-    host: !secret ip_avr
-  - platform: ziggo_mediabox_xl
-    host: !secret ip_horizon
-    name: Horizon
-  - platform: spotify
-    client_id: !secret spotify_client_id
-    client_secret: !secret spotify_client_secret
+notify:
+  - platform: html5
+    gcm_api_key: !secret notify_api_key
+    gcm_sender_id: !secret notify_sender_id
+  
+media_player: !include media_players.yaml
     
 google_assistant:
   project_id: !secret google_project_id
@@ -103,8 +102,10 @@ google_assistant:
     - switch
 
 # Cloud
-cloud:
+#cloud:
 
 group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
+switch: !include switches.yaml
+zone: !include zones.yaml

@@ -63,3 +63,31 @@
       data:
         entity_id: media_player.harman_kardon_avr
         source: Cable Sat
+        
+- id: work_morning
+  alias: Work morning
+  trigger:
+    - platform: state
+      entity_id: sensor.occasion
+    - platform: homeassistant
+      event: start
+  action:
+    service: script.group_visibility
+    data:
+      entity_id: group.work_morning_view
+      cond: sensor.occasion
+      visible_state: 'work_morning'
+      
+- id: work_end
+  alias: Work end
+  trigger:
+    - platform: state
+      entity_id: sensor.occasion
+    - platform: homeassistant
+      event: start
+  action:
+    service: script.group_visibility
+    data:
+      entity_id: group.work_end_view
+      cond: sensor.occasion
+      visible_state: 'work_end'

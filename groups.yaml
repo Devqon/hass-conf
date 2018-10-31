@@ -1,0 +1,67 @@
+  ########
+  # Views
+  ########
+  default_view:
+    view: yes
+    icon: mdi:home
+    entities:
+      - sun.sun
+      - device_tracker.sander
+      - device_tracker.naomi
+      - sensor.yr_symbol
+      - weather.buienradar
+      - media_player.universal
+      - media_player.xbox
+      - media_player.harman_kardon_avr
+      - media_player.spotify
+      
+  zones_view:
+    view: yes
+    name: Zones
+    entities:
+      - binary_sensor.floorplan
+      
+  work_morning_view:
+    icon: mdi:weather-sunset-up
+    entities:
+      - group.train_deventer
+      - weather.buienradar
+      
+  work_end_view:
+    icon: mdi:weather-sunset-down
+    entities:
+      - group.train_apeldoorn
+      
+  all_media_view:
+    view: yes
+    icon: mdi:cellphone-link
+    entities:
+      - groups.media
+      
+  ###########
+  # grouping
+  ###########
+  trains:
+    name: Treinen
+    entities:
+      - sensor.ossevelddeventer
+      - sensor.deventerosseveld
+      
+  train_deventer:
+    name: Trein
+    entities:
+      - sensor.ossevelddeventer
+      
+  train_apeldoorn:
+    name: Trein
+    entities:
+      - sensor.deventerosseveld
+      
+  media:
+    name: Media
+    entities:
+      - media_player.universal
+      - media_player.xbox
+      - media_player.harman_kardon_avr
+      - media_player.spotify
+      - media_player.samsungtv

@@ -6,6 +6,7 @@
 *.txt
 *.log
 *-cache
+*.db
 .uuid
 .storage
 .cloud
@@ -14,3 +15,5 @@
 ip_bans.yaml
 secrets.yaml
 known_devices.yaml
+zones.yaml
+html5_push_registrations.conf

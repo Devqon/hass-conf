@@ -1,0 +1,17 @@
+- platform: yr
+
+- platform: nederlandse_spoorwegen
+  name: "Treinen"
+  email: !secret ns_user
+  password: !secret ns_password
+  routes:
+    - name: Osseveld-Deventer
+      from: Apdo
+      to: Dv
+    - name: Deventer-Osseveld
+      from: Dv
+      to: Apdo
+      
+- platform: command_line
+  name: Occasion
+  command: "python3 /config/scripts/occasion.py"
