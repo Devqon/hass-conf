@@ -10,10 +10,14 @@
 .uuid
 .storage
 .cloud
+
+# no need to check in
 .google.token
 .xbox-token.json
+html5_push_registrations.conf
+
+# secrets
 ip_bans.yaml
 secrets.yaml
 known_devices.yaml
 zones.yaml
-html5_push_registrations.conf

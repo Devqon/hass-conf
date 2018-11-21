@@ -14,14 +14,25 @@ homeassistant:
   # Customization file
   customize: !include customize.yaml
   
+  customize_glob:
+    "device_tracker.*":
+      templates:
+        theme: if (state === 'home') return 'home'; else if (state === 'Topicus') return 'topicus'; else return null;
+  
+logger:
+  default: error
+  logs:
+    rflink: debug
+    homeassistant.components.rflink: debug
+  
 http:
   base_url: !secret base_url
 
 # Enables the frontend
-frontend:
-  themes: !include themes.yaml
-  extra_html_url:
-  - /local/custom_ui/state-card-floorplan.html
+frontend: !include frontend.yaml
+
+customizer:
+  custom_ui: local
 
 # Enables configuration UI
 config:
@@ -32,7 +43,8 @@ device_tracker:
     hosts:
     - !secret ip_sander
     - !secret ip_naomi
-    interval_seconds: 30
+    consider_home: 600
+    interval_seconds: 15
 
 panel_iframe:
   configurator:
@@ -56,6 +68,14 @@ panel_iframe:
 updater:
   # Optional, allows Home Assistant developers to focus on popular components.
   # include_used_components: true
+  
+custom_updater:
+  track:
+    - components
+    - cards
+    - python_scripts
+  card_urls:
+    - https://raw.githubusercontent.com/kalkih/mini-media-player/master/tracker.json
 
 # Discover some devices automatically
 discovery:
@@ -75,11 +95,40 @@ map:
 # Track the sun
 sun:
 
+mqtt:
+  broker: core-mosquitto
+  username: !secret mosquitto_username
+  password: !secret mosquitto_password
+
 weather:
   - platform: buienradar
-    name: buienradar
+    name: Buienradar
 
 sensor: !include sensors.yaml
+binary_sensor: !include binary_sensors.yaml
+
+rflink:
+  port: /dev/ttyUSB0
+  
+light:
+  - platform: rflink
+    automatic_add: true
+  - platform: template
+    lights:
+      living_room:
+        friendly_name: 'Lampen Woonkamer'
+        turn_on:
+          service: light.turn_on
+          entity_id: group.switch_lights_livingroom
+        turn_off:
+          service: light.turn_off
+          entity_id: group.switch_lights_livingroom
+        set_level:
+          service_template: light.turn_'{{ "off" if brightness == 0 else "on" }}'
+          entity_id: group.switch_lights_livingroom
+        value_template: '{{ states.switch.newkaku_02e0bc00_2.state }}'
+
+panel_custom: !include panel_custom.yaml
 
 # Text to speech
 tts:
@@ -91,6 +140,10 @@ notify:
     gcm_sender_id: !secret notify_sender_id
   
 media_player: !include media_players.yaml
+
+google:
+  client_id: !secret google_client_id
+  client_secret: !secret google_client_secret
     
 google_assistant:
   project_id: !secret google_project_id
@@ -100,9 +153,11 @@ google_assistant:
     - group
     - input_boolean
     - switch
+    - script
 
 # Cloud
 #cloud:
+wake_on_lan:
 
 group: !include groups.yaml
 automation: !include automations.yaml

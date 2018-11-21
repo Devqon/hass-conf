@@ -9,34 +9,44 @@
       - device_tracker.sander
       - device_tracker.naomi
       - sensor.yr_symbol
-      - weather.buienradar
+      - group.work_morning_view
+      - group.work_end_view
+      - group.evening_view
       - media_player.universal
       - media_player.xbox
       - media_player.harman_kardon_avr
       - media_player.spotify
       
-  zones_view:
-    view: yes
-    name: Zones
-    entities:
-      - binary_sensor.floorplan
-      
-  work_morning_view:
+  work_morning:
     icon: mdi:weather-sunset-up
     entities:
+      - script.news_on
       - group.train_deventer
       - weather.buienradar
       
-  work_end_view:
-    icon: mdi:weather-sunset-down
+  work_end:
+    icon: mdi:worker
     entities:
       - group.train_apeldoorn
+      
+  evening:
+    icon: mdi:weather-sunset-down
+    entities:
+      - script.drphil
       
   all_media_view:
     view: yes
     icon: mdi:cellphone-link
     entities:
-      - groups.media
+      - group.media
+      
+  information_view:
+    view: yes
+    name: Overig
+    entities:
+      - group.tracked_devices
+      - weather.buienradar
+      - group.trains
       
   ###########
   # grouping
@@ -57,11 +67,22 @@
     entities:
       - sensor.deventerosseveld
       
+  tracked_devices:
+    name: Wie is waar
+    entities:
+    - device_tracker.sander
+    - device_tracker.naomi
+      
   media:
     name: Media
     entities:
-      - media_player.universal
+      - media_player.horizon
       - media_player.xbox
       - media_player.harman_kardon_avr
       - media_player.spotify
       - media_player.samsungtv
+      
+  switch_lights_livingroom:
+    name: Lampen Woonkamer
+    entities:
+      - switch.lampen_woonkamer

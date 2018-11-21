@@ -1,5 +1,8 @@
 - platform: yr
 
+- platform: rflink
+  automatic_add: true
+
 - platform: nederlandse_spoorwegen
   name: "Treinen"
   email: !secret ns_user
@@ -14,4 +17,4 @@
       
 - platform: command_line
   name: Occasion
-  command: "python3 /config/scripts/occasion.py"
+  command: "python3 /config/python_scripts/occasion.py"
