@@ -50,12 +50,12 @@ script:
       - service: media_player.volume_set
         data:
           entity_id: media_player.woonkamer
-          volume_level: '0.30'
+          volume_level: '0.70'
       - service: media_player.play_media
         data_template:
           entity_id: media_player.woonkamer
           media_content_id: >
-            {% if is_state("input_select.radio_station", "Radio 538") %} http://vip-icecast.538.lw.triple-it.nl:80/RADIO538_MP3
+            {% if is_state("input_select.radio_station", "Radio 538") %} http://18973.live.streamtheworld.com/RADIO538.mp3
             {% elif is_state("input_select.radio_station", "Q-Music") %} http://icecast-qmusic.cdp.triple-it.nl/Qmusic_nl_live_96.mp3
             {% elif is_state("input_select.radio_station", "3FM") %} http://icecast.omroep.nl/3fm-bb-mp3
             {% elif is_state("input_select.radio_station", "100% NL") %} http://stream.100p.nl/100pctnl.mp3
@@ -75,7 +75,14 @@ script:
           media_content_type: 'audio/mp4'
 
 automation:
-  radio_volume:
+  - id: radio_select
+    alias: Listen Radio
+    trigger:
+      - platform: state
+        entity_id: input_select.radio_station
+    action: 
+      - service: script.play_radio
+  - id: radio_volume
     alias: 'Set Radio Volume'
     trigger:
       platform: state
@@ -84,4 +91,4 @@ automation:
       service: media_player.volume_set
       data_template:
         entity_id: media_player.woonkamer
-        volume_level: "{{ states('input_number.volume_radio') }}"
+        volume_level: '{{ states.input_number.volume_radio.state }}'
