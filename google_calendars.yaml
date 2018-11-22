@@ -1,0 +1,35 @@
+
+- cal_id: 4v54gs251e5m7libkntacjk0o0@group.calendar.google.com
+  entities:
+  - device_id: soccer
+    ignore_availability: true
+    name: csv Apeldoorn 4
+    track: true
+
+- cal_id: s.geerts89@gmail.com
+  entities:
+  - device_id: cal
+    ignore_availability: true
+    name: s.geerts89@gmail.com
+    track: true
+
+- cal_id: '#contacts@group.v.calendar.google.com'
+  entities:
+  - device_id: contacts
+    ignore_availability: true
+    name: Contacts
+    track: false
+
+- cal_id: nl.dutch#holiday@group.v.calendar.google.com
+  entities:
+  - device_id: feestdagen_in_nederland
+    ignore_availability: true
+    name: Feestdagen in Nederland
+    track: false
+
+- cal_id: a8nik8tsmm4s6kiva7onfu9fd0@group.calendar.google.com
+  entities:
+  - device_id: afvalkalender
+    ignore_availability: true
+    name: Afval
+    track: true

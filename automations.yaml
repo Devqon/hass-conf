@@ -1,93 +1,74 @@
-#  # IF: { sun.sun goes under horizon } THEN: { set theme to night mode }
+- id: startup
+  alias: HA startup
+  trigger:
+  - platform: homeassistant
+    event: start
+  action:
 - id: theme_automatic
   alias: Automatic Theme Change
   trigger:
-    - platform: homeassistant
-      event: start
-    - platform: state
-      entity_id: sun.sun
-      to: above_horizon
-    - platform: state
-      entity_id: sun.sun
-      to: below_horizon
+  - platform: homeassistant
+    event: start
+  - platform: state
+    entity_id: sun.sun
+    to: above_horizon
+  - platform: state
+    entity_id: sun.sun
+    to: below_horizon
   action:
-    - service_template: frontend.set_theme
-      data_template:
-        name: >
-          {% if states.sun.sun.state == "above_horizon" %}
-            light_green
-          {% else %}
-            dark_green
-          {% endif %}
-          
-- id: tv_on
-  alias: TV aan
+  - service_template: frontend.set_theme
+    data_template:
+      name: "{% if states.sun.sun.state == \"above_horizon\" %}\n  light_green\n{%\
+        \ else %}\n  midnight\n{% endif %}\n"
+- id: waste_notification
+  alias: Waste Container Warning
   trigger:
-    - platform: state
-      entity_id: media_player.ziggo_mediabox_xl
-      to: 'playing'
-      from: 'off'
-    - platform: state
-      entity_id: media_player.ziggo_mediabox_xl
-      to: 'playing'
-      from: 'idle'
+    platform: time
+    at: '22:00:00'
+  condition:
+    condition: template
+    value_template: "{%- if (as_timestamp(now()) > (as_timestamp(states.calendar.afvalkalender.attributes.start_time)\
+      \ - 86400)) -%}\n  true\n{%- endif -%}"
   action:
-    - service: media_player.turn_on
-      entity_id: media_player.samsungtv
-    - service: media_player.turn_on
-      entity_id: media_player.harman_kardon_avr
-    - delay: '00:00:05'
-    - service: media_player.select_source
-      data:
-        entity_id: media_player.harman_kardon_avr
-        source: STB
-        
-- id: xbox_on
-  alias: Xbox aan
-  trigger:
-    - platform: state
-      entity_id: media_player.xboxone
-      to: 'playing'
-      from: 'off'
-    - platform: state
-      entity_id: media_player.xboxone
-      to: 'playing'
-      from: 'idle'
-  action:
-    - service: media_player.turn_on
-      entity_id: media_player.samsungtv
-    - service: media_player.turn_on
-      entity_id: media_player.harman_kardon_avr
-    - delay: '00:00:05'
-    - service: media_player.select_source
-      data:
-        entity_id: media_player.harman_kardon_avr
-        source: Cable Sat
-        
-- id: work_morning
-  alias: Work morning
-  trigger:
-    - platform: state
-      entity_id: sensor.occasion
-    - platform: homeassistant
-      event: start
-  action:
-    service: script.group_visibility
+  - service: notify.notify
     data:
-      entity_id: group.work_morning_view
-      cond: sensor.occasion
-      visible_state: 'work_morning'
-      
-- id: work_end
-  alias: Work end
+      message: '[INFO] Morgen wordt er {{ states.calendar.afvalkalender.attributes.description
+        }} opgehaald!'
+- id: notify_update
+  alias: Update Available Notifications
   trigger:
-    - platform: state
-      entity_id: sensor.occasion
-    - platform: homeassistant
-      event: start
+    platform: state
+    entity_id: updater.updater
   action:
-    service: script.group_visibility
+    service: notify.notify
     data:
-      entity_id: group.work_end_view
-      cond: sensor.occasion
-      visible_state: 'work_end'
+      message: Update for Home Assistant is available.
+- id: light_evening
+  alias: Light on in the evening
+  trigger:
+  - event: sunset
+    offset: -01:00:00
+    platform: sun
+  - entity_id: group.all_devices
+    platform: state
+    to: home
+  condition:
+  - condition: state
+    entity_id: group.all_devices
+    state: home
+  - after: '16:00:00'
+    before: '23:00:00'
+    condition: time
+  action:
+  - data:
+      group: group.switch_lights_livingroom
+    entity_id: group.switch_lights_livingroom
+    service: group.turn_on
+- alias: Away Mode
+  trigger:
+    platform: state
+    entity_id: group.all_devices
+    to: not_home
+  action:
+    service: group.turn_off
+    entity_id: group.switch_lights_livingroom

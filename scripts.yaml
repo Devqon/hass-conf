@@ -3,4 +3,61 @@ group_visibility:
     - service: group.set_visibility
       data_template:
         entity_id: '{{ entity_id }}'
-        visible: '{{ is_state(cond, visible_state) }}'
+        visible: >
+          {% if is_state(cond, visible_state) %}
+            True
+          {% else %}
+            False
+          {% endif %}
+        
+news_on:
+  sequence:
+    - service: script.tv_on
+    - delay: '00:00:07'
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.horizon
+        source: 'RTL 4'
+        
+drphil:
+  sequence:
+    - service: script.tv_on
+    - delay: '00:00:07'
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.horizon
+        source: 'RTL 5'
+  
+tv_on:
+  sequence:
+    - service: media_player.turn_on
+      data:
+        entity_id: media_player.horizon
+    - service: script.receiver_on
+    - delay: '00:00:05'
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.harman_kardon_avr
+        source: STB
+        
+xbox_on:
+  sequence:
+    - service: media_player.turn_on
+      data:
+        entity_id: media_player.xbox
+    - service: script.receiver_on
+    - delay: '00:00:05'
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.harman_kardon_avr
+        source: 'Cable Sat'
+        
+receiver_on:
+  sequence:
+    # helaas stuk
+    #- service: media_player.turn_on
+    #  data:
+    #    entity_id: media_player.samsung_tv_remote
+    - service: media_player.turn_on
+      data:
+        entity_id: media_player.harman_kardon_avr
