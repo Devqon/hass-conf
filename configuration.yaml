@@ -13,11 +13,8 @@ homeassistant:
   time_zone: Europe/Amsterdam
   # Customization file
   customize: !include customize.yaml
-  
-  customize_glob:
-    "device_tracker.*":
-      templates:
-        theme: if (state === 'home') return 'home'; else if (state === 'Topicus') return 'topicus'; else return null;
+
+  packages: !include_dir_named packages
   
 logger:
   default: error
@@ -36,29 +33,6 @@ customizer:
 
 # Enables configuration UI
 config:
-
-device_tracker:
-  - platform: gpslogger
-  - platform: nmap_tracker
-    hosts:
-    - !secret ip_sander
-    - !secret ip_naomi
-    consider_home: 600
-    interval_seconds: 15
-
-panel_iframe:
-  configurator:
-    title: Configurator
-    icon: mdi:wrench
-    url: !secret url_configurator
-  pihole:
-    title: Pi-hole
-    icon: mdi:block-helper
-    url: !secret url_pihole
-  calendar:
-    title: Kalender
-    icon: mdi:calendar
-    url: !secret url_calendar
 
 # Checks for available updates
 # Note: This component will send some information about your system to
@@ -100,46 +74,12 @@ mqtt:
   username: !secret mosquitto_username
   password: !secret mosquitto_password
 
-weather:
-  - platform: buienradar
-    name: Buienradar
-
-sensor: !include sensors.yaml
-binary_sensor: !include binary_sensors.yaml
+cast:
 
 rflink:
   port: /dev/ttyUSB0
-  
-light:
-  - platform: rflink
-    automatic_add: true
-  - platform: template
-    lights:
-      living_room:
-        friendly_name: 'Lampen Woonkamer'
-        turn_on:
-          service: light.turn_on
-          entity_id: group.switch_lights_livingroom
-        turn_off:
-          service: light.turn_off
-          entity_id: group.switch_lights_livingroom
-        set_level:
-          service_template: light.turn_'{{ "off" if brightness == 0 else "on" }}'
-          entity_id: group.switch_lights_livingroom
-        value_template: '{{ states.switch.newkaku_02e0bc00_2.state }}'
 
 panel_custom: !include panel_custom.yaml
-
-# Text to speech
-tts:
-  - platform: google
-  
-notify:
-  - platform: html5
-    gcm_api_key: !secret notify_api_key
-    gcm_sender_id: !secret notify_sender_id
-  
-media_player: !include media_players.yaml
 
 google:
   client_id: !secret google_client_id
@@ -155,12 +95,4 @@ google_assistant:
     - switch
     - script
 
-# Cloud
-#cloud:
-wake_on_lan:
-
-group: !include groups.yaml
-automation: !include automations.yaml
-script: !include scripts.yaml
-switch: !include switches.yaml
 zone: !include zones.yaml

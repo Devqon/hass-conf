@@ -1,0 +1,6 @@
+sensor:
+- platform: yr
+
+weather:
+  - platform: buienradar
+    name: Buienradar

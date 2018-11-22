@@ -1,0 +1,11 @@
+tts:
+  - platform: google
+    cache: true
+    cache_dir: /tmp/tts
+    time_memory: 300
+  
+notify:
+  - platform: html5
+    name: Chrome Push
+    gcm_api_key: !secret gcm_api_key
+    gcm_sender_id: !secret gcm_sender_id

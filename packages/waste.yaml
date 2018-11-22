@@ -1,0 +1,14 @@
+automation:
+  notification_waste:
+    alias: Waste Container Warning
+    trigger:
+      platform: time
+      at: '20:00:00'
+    condition:
+      condition: template
+      value_template: "{%- if (as_timestamp(now()) > (as_timestamp(state_attr('calendar.calendar_waste', 'start_time'))\
+        \ - 86400)) -%}\n  true\n{%- endif -%}"
+  action:
+  - service: notify.notify
+    data:
+      message: "[INFO] Morgen wordt er {{ state_attr('calendar.calendar_waste', 'description') }} opgehaald!"

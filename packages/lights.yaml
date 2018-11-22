@@ -1,0 +1,47 @@
+light:
+  - platform: rflink
+    automatic_add: true
+    device_defaults:
+      fire_event: true
+      signal_repetitions: 4
+    devices:
+      newkaku_02e0bc00_2:
+        name: Woonkamer TV
+      newkaku_02e0bc00_3:
+        name: Woonkamer Bank
+      newkaku_02e0bc00_4:
+        name: Woonkamer Hoek
+
+group:
+  lights_livingroom:
+    name: Alle Lampen Woonkamer
+    entities:
+      - light.woonkamer_tv
+      - light.woonkamer_bank
+      - light.woonkamer_hoek
+  lights_livingroom_default:
+    name: Lampen Woonkamer
+    entities:
+      - light.woonkamer_tv
+      - light.woonkamer_bank
+
+automation:
+  - id: light_evening
+    alias: Light on in the evening
+    trigger:
+      - event: sunset
+        offset: -01:00:00
+        platform: sun
+      - entity_id: group.tracked_people
+        platform: state
+        to: home
+    condition:
+      - condition: state
+        entity_id: group.tracked_people
+        state: home
+      - after: '16:00:00'
+        before: '23:00:00'
+        condition: time
+    action:
+      service: homeassistant.turn_on
+      entity_id: group.lights_livingroom_default

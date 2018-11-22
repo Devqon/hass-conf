@@ -1,0 +1,44 @@
+#########################################
+# General configuration
+#########################################
+
+panel_iframe:
+  configurator:
+    title: Configurator
+    icon: mdi:wrench
+    url: !secret url_configurator
+  pihole:
+    title: Pi-hole
+    icon: mdi:block-helper
+    url: !secret url_pihole
+  calendar:
+    title: Kalender
+    icon: mdi:calendar
+    url: !secret url_calendar
+
+automation:
+  - id: theme_automatic
+    alias: Automatic Theme Change
+    trigger:
+    - platform: homeassistant
+      event: start
+    - platform: state
+      entity_id: sun.sun
+      to: above_horizon
+    - platform: state
+      entity_id: sun.sun
+      to: below_horizon
+    action:
+    - service_template: frontend.set_theme
+      data_template:
+        name: "{% if states.sun.sun.state == \"above_horizon\" %}\n  light_green\n{%\
+          \ else %}\n  midnight\n{% endif %}\n"
+  - id: notify_update
+    alias: Update Available Notifications
+    trigger:
+      platform: state
+      entity_id: updater.updater
+    action:
+      service: notify.notify
+      data:
+        message: Update for Home Assistant is available.

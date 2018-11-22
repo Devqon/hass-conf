@@ -13,20 +13,24 @@ views:
     icon: mdi:home-outline
     badges:
     - sun.sun
-    - device_tracker.sander
-    - device_tracker.naomi
+    - device_tracker.his_phone
+    - device_tracker.her_phone
     - sensor.yr_symbol
     cards:
       - type: glance
         title: Lights
         show_state: false
         entities:
-          - entity: switch.lampen_woonkamer
-            name: Alle
+          - entity: light.woonkamer_tv
+            name: TV
             icon: mdi:lightbulb
             tap_action: toggle
-          - entity: switch.bank
+          - entity: light.woonkamer_bank
             name: Bank rechts
+            icon: mdi:desk-lamp
+            tap_action: toggle
+          - entity: light.woonkamer_hoek
+            name: Hoek
             icon: mdi:desk-lamp
             tap_action: toggle
       - type: conditional
@@ -75,7 +79,7 @@ views:
             group: true
             power_color: true
             hide_volume: true
-          - entity: media_player.xbox
+          - entity: media_player.xboxone
             icon: mdi:xbox
             type: custom:mini-media-player
             hide_controls: true
@@ -97,25 +101,12 @@ views:
         card:
           title: Wie is waar
           type: entities
-        group: group.tracked_devices
+        group: group.tracked_people
       - type: custom:group-card
         title:
         card:
           type: glance
         group: group.trains
-        
-  - title: Tests
-    cards:
-      - type: glance
-        entities:
-          - entity: light.living_room
-      - type: custom:mini-media-player
-        title: Harman Kardon
-        entity: media_player.harman_kardon_avr_test
-        icon: mdi:surround-sound
-        artwork_border: true
-        show_source: true
-        volume_stateless: true
           
   - title: Configuration
     icon: mdi:settings

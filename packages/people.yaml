@@ -1,0 +1,197 @@
+#########################################################################
+# People
+#########################################################################
+
+homeassistant:
+  customize:
+    switch.sleeping:
+      icon: mdi:sleep
+      emulated_hue_hidden: false
+      emulated_hue_name: Sleep Mode
+    switch.vacation:
+      icon: mdi:airplane
+    switch.guests:
+      icon: mdi:human-male-female
+      emulated_hue_hidden: false
+      emulated_hue_name: Guest Mode
+
+  customize_glob:
+    "device_tracker.*":
+      templates:
+        theme: if (state === 'home') return 'home'; else if (state === 'Topicus') return 'topicus'; else return null;
+
+device_tracker:
+  - platform: gpslogger
+  - platform: nmap_tracker
+    hosts:
+    - !secret ip_his
+    - !secret ip_hers
+    consider_home: 600
+    interval_seconds: 15
+
+group:
+  # People states.
+  people:
+    - device_tracker.his_phone
+    - device_tracker.her_phone
+    - switch.sleeping
+    - switch.vacation
+    - switch.guests
+  # Tracked people (subset of device_tracker.all_devices).
+  tracked_people:
+    - device_tracker.her_phone
+    - device_tracker.his_phone
+
+switch:
+  # Switch indicating sleeping.
+  - platform: mqtt
+    name: "Sleeping"
+    state_topic: "nfc/sleeping"
+    command_topic: "nfc/sleeping"
+    qos: 1
+    payload_on: "yes"
+    payload_off: "no"
+    retain: true
+  # Switch indicating vacation.
+  - platform: mqtt
+    name: "Vacation"
+    state_topic: "nfc/vacation"
+    command_topic: "nfc/vacation"
+    qos: 1
+    payload_on: "yes"
+    payload_off: "no"
+    retain: true
+  # Switch indicating guests.
+  - platform: mqtt
+    name: "Guests"
+    state_topic: "nfc/guests"
+    command_topic: "nfc/guests"
+    qos: 1
+    payload_on: "yes"
+    payload_off: "no"
+    retain: true
+
+automation:
+  
+  # Automatically turn off all devices when away for more than 30 minutes
+  - id: away_mode
+    alias: Away Mode
+    trigger:
+      platform: state
+      entity_id: group.all_devices
+      to: not_home
+      for:
+        minutes: 30
+    action:
+      - service: homeassistant.turn_off
+        entity_id: group.all_lights
+      - services: homeassistant.turn_off
+        entity_id: group.all_switches
+
+  # On vacation, make sure the thermostat is on "away" mode.
+  - id: vacation_mode
+    alias: Vacation started
+    trigger:
+      platform: state
+      entity_id: switch.vacation
+      to: 'on'
+    action:
+      - service: climate.set_away_mode
+        data:
+          entity_id: climate.thermostat
+          away_mode: true
+
+  # When sleeping, play a good night TTS message, turn off
+  # all lighting, turn on stair nightlight lighting, turn off
+  # smart sockets, pause media, and lock the front door.
+  # If any door is open, don't activate.
+  # If temperature meets a threshold, turn on the bedroom fan.
+  - alias: Sleeping
+    id: sleep_mode
+    trigger:
+      platform: state
+      entity_id: switch.sleeping
+      to: 'on'
+    condition:
+      - condition: state
+        entity_id: switch.guests
+        state: 'off'
+      - condition: state
+        entity_id: binary_sensor.any_door_open
+        state: 'off'
+    action:
+      - service: script.turn_on
+        entity_id: script.play_tts
+        data_template:
+          variables:
+            message: "Good night."
+      - service: light.turn_off
+        entity_id: group.all_lights
+      - service: light.turn_on
+        entity_id: light.stair_lighting
+        data:
+          brightness: 10
+          color_name: red
+      - service: switch.turn_off
+        entity_id:
+          - group.living_room_lights
+      - service: fan.turn_off
+        entity_id: fan.zwave_fan_1_level
+      - service: lock.lock
+        entity_id: group.all_locks
+      - service: media_player.turn_off
+        entity_id:
+          - media_player.firetv
+      - service: media_player.media_pause
+        entity_id:
+          - media_player.spotify
+          - media_player.local_music
+          - media_player.mpd
+      - condition: numeric_state
+        entity_id: sensor.dark_sky_temperature
+        above: 60
+      - service: fan.turn_on
+        entity_id: fan.zwave_fan_1_level
+        data:
+          speed: 'low'
+
+  # Sleep mode isn't always manually turned off in the morning.
+  # Just turn it off automatically.
+  - id: awake_mode
+    alias: Turn off sleep mode automatically
+    trigger:
+      platform: time
+      at: '10:00:00'
+    condition:
+    - condition: state
+      entity_id: switch.sleeping
+      state: 'on'
+    action:
+      service: homeassistant.turn_off
+      data:
+        entity_id: switch.sleeping
+
+  # If no one has been home for 24 hours, automatically
+  # enable vacation mode.
+  - id: automatic_vacation_mode
+    alias: automatic vacation mode
+    trigger:
+      - platform: state
+        entity_id: group.tracked_people
+        to: not_home
+        for:
+          hours: 24
+    action:
+      - service: switch.turn_on
+        entity_id: switch.vacation
+
+  # Turn off vacation mode as soon as anyone gets home.
+  - id: turn_off_vacation_mode
+    alias: turn off vacation mode
+    trigger:
+      - platform: state
+        entity_id: group.tracked_people
+        to: home
+    action:
+      - service: switch.turn_off
+        entity_id: switch.vacation

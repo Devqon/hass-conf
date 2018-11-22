@@ -1,0 +1,118 @@
+###############################################################################
+# Media Players
+###############################################################################
+homeassistant:
+  customize:
+
+    media_player.receiver:
+      friendly_name: Living Room Receiver
+    media_player.living_room_tv:
+      friendly_name: Living Room TV
+    media_player.horizon:
+      friendly_name: Living Room STB
+    media_player.xboxone:
+      friendly_name: Xbox One
+    media_player.living_room_cast:
+      friendly_name: Living Room Chromecast
+
+wake_on_lan:
+
+media_player:
+
+  - platform: samsungtv
+    name: Living Room TV
+    host: !secret ip_samsung_tv
+    mac: !secret mac_samsung_tv
+  
+  - platform: xboxone
+    name: Xboxone
+    device: !secret xbox_id
+    
+  - platform: harman_kardon_avr
+    name: Receiver
+    host: !secret ip_avr
+    
+  - platform: horizon
+    name: Horizon
+    host: !secret ip_horizon
+
+  - platform: cast
+    name: Chromecast
+    host: !secret ip_chromecast
+    
+  - platform: spotify
+    name: Spotify
+    client_id: !secret spotify_client_id
+    client_secret: !secret spotify_client_secret
+
+sensor:
+
+  - platform: template
+    sensors:
+      living_room_source:
+        value_template: "{{ state_attr('media_player.receiver', 'source') }}"
+
+###############################################################################
+# Groups
+###############################################################################
+group:
+
+  media_living_room:
+    name: Media Living Room
+    entities:
+      - media_player.receiver
+      - media_player.living_room_tv
+      - media_player.horizon
+      - media_player.xboxone
+
+  media:
+    name: Media
+    entities:
+      - media_player.horizon
+      - media_player.xbox
+      - media_player.harman_kardon_avr
+      - media_player.spotify
+      - media_player.samsungtv
+
+###############################################################################
+# Scripts
+###############################################################################
+script:
+
+  turn_on_media_basic:
+    alias: "Start TV and Receiver"
+    sequence:
+      - service: media_player.turn_on
+        entity_id: media_player.living_room_tv
+      - service: script.turn_on_receiver
+  
+  turn_on_receiver:
+    alias: "Start Receiver"
+    sequence:
+      - service: wake_on_lan.send_magic_packet
+        data:
+          mac: !secret mac_avr
+      - delay: "00:00:05"
+
+  #####
+  # 1. Turn on receiver
+  # 2. Turn on TV
+  # 3. Turn on Xbox
+  # 4 Delay for the receiver to startup
+  # 5 Set Xbox as input source (Cable Sat)
+  #####
+  turn_on_xboxone:
+    alias: "Start Xbox One"
+    sequence:
+      - service: script.turn_on_media_basic
+      - service: media_player.turn_on
+        entity_id: media_player.xboxone
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.receiver
+          source: 'Cable Sat'
+
+###############################################################################
+# Automations
+###############################################################################
+automation:

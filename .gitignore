@@ -2,6 +2,7 @@
 *
 !*.yaml
 !.gitignore
+!packages/
 *.conf
 *.txt
 *.log
