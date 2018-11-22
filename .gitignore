@@ -3,6 +3,7 @@
 !*.yaml
 !.gitignore
 !packages/
+!floorplan/
 *.conf
 *.txt
 *.log
