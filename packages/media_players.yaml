@@ -5,15 +5,15 @@ homeassistant:
   customize:
 
     media_player.receiver:
-      friendly_name: Living Room Receiver
+      friendly_name: Receiver
     media_player.living_room_tv:
-      friendly_name: Living Room TV
+      friendly_name: TV
     media_player.horizon:
-      friendly_name: Living Room STB
+      friendly_name: STB
     media_player.xboxone:
       friendly_name: Xbox One
     media_player.living_room_cast:
-      friendly_name: Living Room Chromecast
+      friendly_name: Chromecast
 
 wake_on_lan:
 
@@ -69,10 +69,10 @@ group:
     name: Media
     entities:
       - media_player.horizon
-      - media_player.xbox
-      - media_player.harman_kardon_avr
+      - media_player.xboxone
+      - media_player.receiver
       - media_player.spotify
-      - media_player.samsungtv
+      - media_player.living_room_tv
 
 ###############################################################################
 # Scripts

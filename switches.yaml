@@ -1,9 +1,0 @@
-# - platform: rflink
-#   device_defaults:
-#     fire_event: true
-#     signal_repetitions: 4
-#   devices:
-#     newkaku_02e0bc00_2:
-#       name: Lampen Woonkamer
-#     newkaku_02e0bc00_3:
-#       name: Bank

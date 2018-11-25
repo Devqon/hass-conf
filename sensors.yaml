@@ -1,6 +1,0 @@
-- platform: rflink
-  automatic_add: true
-      
-- platform: command_line
-  name: Occasion
-  command: "python3 /config/python_scripts/occasion.py"

@@ -4,6 +4,12 @@ light:
     device_defaults:
       fire_event: true
       signal_repetitions: 4
+        
+switch:
+  - platform: rflink
+    device_defaults:
+      fire_event: true
+      signal_repetitions: 4
     devices:
       newkaku_02e0bc00_2:
         name: Woonkamer TV
@@ -16,14 +22,14 @@ group:
   lights_livingroom:
     name: Alle Lampen Woonkamer
     entities:
-      - light.woonkamer_tv
-      - light.woonkamer_bank
-      - light.woonkamer_hoek
+      - switch.woonkamer_tv
+      - switch.woonkamer_bank
+      - switch.woonkamer_hoek
   lights_livingroom_default:
     name: Lampen Woonkamer
     entities:
-      - light.woonkamer_tv
-      - light.woonkamer_bank
+      - switch.woonkamer_tv
+      - switch.woonkamer_bank
 
 automation:
   - id: light_evening
@@ -43,5 +49,5 @@ automation:
         before: '23:00:00'
         condition: time
     action:
-      service: homeassistant.turn_on
+      service: switch.turn_on
       entity_id: group.lights_livingroom_default
