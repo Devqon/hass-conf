@@ -1,9 +1,4 @@
 # Example .gitignore file for your config dir. Lines with ! will not be ignored.
-*
-!*.yaml
-!.gitignore
-!packages/
-!packages/media_players/
 *.conf
 *.txt
 *.log
@@ -12,14 +7,27 @@
 .uuid
 .storage
 .cloud
+*.pyc
+__pycache__
+
+# development
+.vscode/
 
 # no need to check in
 .google.token
 .xbox-token.json
 html5_push_registrations.conf
 
+# custom_components
+custom_components/*
+!custom_components/hk_avr/
+!custom_components/horizon_custom_onoff/
+
+# www
+www/*
+!www/images/
+
 # secrets
 ip_bans.yaml
 secrets.yaml
 known_devices.yaml
-zones.yaml

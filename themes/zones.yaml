@@ -1,0 +1,11 @@
+home:
+  label-badge-red: green
+  label-badge-border-color: lightgrey
+  label-badge-background-color: white
+  label-badge-text-color: green
+
+work:
+ label-badge-red: '#F4E537'
+ label-badge-border-color: lightgrey
+ label-badge-background-color: white
+ label-badge-text-color: '#F4E537'

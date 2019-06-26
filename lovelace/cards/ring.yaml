@@ -1,0 +1,6 @@
+type: picture-glance
+title: Voordeur
+entities:
+  - binary_sensor.ring_front_door_motion
+  - binary_sensor.ring_front_door_ding
+  - sensor.ring_front_door_last_activity
