@@ -1,0 +1,27 @@
+sensor:
+  - platform: rflink
+    automatic_add: true
+    devices:
+      xiron_4503_temp:
+        name: bedroom_temperature
+        sensor_type: temperature
+      xiron_4503_hum:
+        name: bedroom_humidity
+        sensor_type: humidity
+      xiron_4503_bat:
+        name: bedroom_temp_battery
+        sensor_type: battery
+
+nest:
+  client_id: !secret nest_client_id
+  client_secret: !secret nest_client_secret
+
+climate:
+  - platform: generic_thermostat
+    name: Temperatuur boven
+    target_sensor: sensor.bedroom_temperature
+    heater: input_boolean.fake_heater
+
+input_boolean:
+  fake_heater:
+    name: fake heater

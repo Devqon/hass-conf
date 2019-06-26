@@ -1,0 +1,80 @@
+################################################################################
+# The Harman Kardon receiver needs a lot of workarounds, so in a separate package
+################################################################################
+
+media_player:
+
+  - platform: hk_avr
+    name: Receiver Dummy
+    host: !secret ip_avr
+    key_interval: 0.5
+    simulate_volume_set: True
+    sources:
+      - source: STB
+        name: STB
+      - source: Game
+        name: Game
+      - source: Server
+        name: Server
+      - source: Disc
+        name: Disc
+        
+  - platform: universal
+    name: Receiver
+    children:
+      - media_player.receiver_dummy
+    commands:
+      turn_on:
+        service: script.turn_on_receiver
+      turn_off:
+        service: script.turn_off_receiver
+      volume_up:
+        service: switch.turn_on
+        data:
+          entity_id: switch.avr_volume
+      volume_down:
+        service: switch.turn_off
+        data:
+          entity_id: switch.avr_volume
+      volume_mute:
+        service: switch.turn_on
+        data:
+          entity_id: switch.mute
+      select_source:
+        service: script.avr_select_source
+        data_template:
+          source: '{{ source }}'
+
+########################################
+# Scripts
+########################################
+
+script:
+  turn_on_receiver:
+    sequence:
+      - service: switch.turn_on
+        data:
+          entity_id: switch.avr
+      - service: python_script.set_state
+        data:
+          entity_id: media_player.receiver_dummy
+          state: on
+
+  turn_off_receiver:
+    sequence:
+      - service: switch.turn_on
+        data:
+          entity_id: switch.avr_source_avr
+      - service: switch.turn_off
+        data:
+          entity_id: switch.avr
+      - service: python_script.set_state
+        data:
+          entity_id: media_player.receiver_dummy
+          state: off
+
+  avr_select_source:
+    sequence:
+      - service: switch.turn_on
+        data_template:
+          entity_id: switch.avr_source_{{ source | lower }}

@@ -1,0 +1,12 @@
+# ring:
+#   username: !secret ring_username
+#   password: !secret ring_password
+
+# sensor:
+#   - platform: ring
+
+# camera:
+#   - platform: ring
+
+# binary_sensor:
+#   - platform: ring

@@ -1,0 +1,127 @@
+google:
+  client_id: !secret google_client_id
+  client_secret: !secret google_client_secret
+
+googlehome:
+  devices:
+    - host: !secret ip_google_home
+      track_alarms: true
+
+google_assistant:
+  project_id: !secret google_project_id
+  api_key: !secret google_api_key
+  exposed_domains:
+    - media_player
+    - switch
+    - light
+    - climate
+  entity_config:
+    group.all_lights:
+      name: Alle lampen
+      expose: true
+      aliases:
+        - Lampen woonkamer
+    group.all_switches:
+      expose: true
+    group.media:
+      name: Alle media
+      expose: true
+      aliases:
+        - Alle apparaten
+    group.media_living_room:
+      name: Media woonkamer
+      expose: true
+    light.woonkamer_bank:
+      name: Lamp tv
+      aliases:
+        - Lamp 3
+    light.stalamp:
+      name: Stalamp
+    light.hoek:
+      name: Hoeklamp
+      aliases:
+        - Hoek
+    media_player.laptop:
+      name: Laptop
+      aliases:
+        - Computer
+    media_player.television:
+      name: TV
+      aliases:
+        - Televisie
+        - Samsung
+    media_player.xbox:
+      name: Xbox
+      aliases:
+        - Xbox one
+        - Console
+        - Game console
+    media_player.mediabox:
+      name: Mediabox
+      aliases:
+        - Ziggo
+        - STB
+    media_player.receiver:
+      name: Receiver
+      aliases:
+        - Harman Kardon
+        - Surround system
+        - Geluidsinstallatie
+
+
+script:
+
+  mute:
+    alias: Mute sound
+    sequence:
+      - service: mediaplayer.volume_mute
+        entity_id: mediaplayer.receiver
+        data:
+          is_volume_muted: True
+
+  speak: 
+    alias: TTS Handler
+    sequence: 
+      - service: tts.google_say
+        entity_id: media_player.googlehome
+        data_template:
+          message: "{{ message }}"
+          
+  speak_is_dad_home:
+    alias: Is Dad Home
+    sequence:
+      - service: script.speak_is_home
+        data:
+          entity_id: 'device_tracker.his_phone'
+          
+  speak_is_mom_home:
+    alias: Is Mom Home
+    sequence:
+      - service: script.speak_is_home
+        data:
+          entity_id: 'device_tracker.her_phone'
+            
+  speak_is_home:
+    alias: Is X Home
+    sequence:
+      - service: script.speak
+        data_template:
+          message: >
+            {% if (is_state(entity_id, 'home')) %}
+              '{{ state_attr(entity_id, "friendly_name") }} is thuis'
+            {% else %}
+              'Helaas, {{ state_attr(entity_id, "friendly_name") }} lijkt niet thuis te zijn'
+            {% endif %}
+        
+automation:
+
+  trigger:
+    platform: event
+    event_type: ifttt_webhook_received
+    event_data:
+      action: call_service
+  action:
+    service_template: '{{ trigger.event.data.service }}'
+    data_template:
+      entity_id: '{{ trigger.event.data.entity_id }}'
+      data: '{{ trigger.event.data.data }}'

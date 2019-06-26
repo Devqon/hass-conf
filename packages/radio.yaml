@@ -9,8 +9,14 @@ group:
     name: Radio
     entities:
     - input_select.radio_station
-    - script.play_radio
+    - input_boolean.play_radio
     - input_number.volume_radio
+    
+input_boolean:
+  play_radio:
+    name: Radio
+    initial: off
+    icon: mdi:play
 
 input_select:
   radio_station:
@@ -40,6 +46,7 @@ input_number:
     min: 0
     max: 1
     step: 0.05 
+    initial: '0.70'
   
 script:
 
@@ -49,11 +56,11 @@ script:
       - service: script.turn_on_receiver
       - service: media_player.volume_set
         data:
-          entity_id: media_player.woonkamer
+          entity_id: media_player.chromecast
           volume_level: '0.70'
       - service: media_player.play_media
         data_template:
-          entity_id: media_player.woonkamer
+          entity_id: media_player.chromecast
           media_content_id: >
             {% if is_state("input_select.radio_station", "Radio 538") %} http://18973.live.streamtheworld.com/RADIO538.mp3
             {% elif is_state("input_select.radio_station", "Q-Music") %} http://icecast-qmusic.cdp.triple-it.nl/Qmusic_nl_live_96.mp3
@@ -75,20 +82,36 @@ script:
           media_content_type: 'audio/mp4'
 
 automation:
-  - id: radio_select
+  - id: radio_play
     alias: Listen Radio
+    initial_state: on
     trigger:
       - platform: state
         entity_id: input_select.radio_station
+      - platform: state
+        entity_id: input_boolean.play_radio
+        to: 'on'
     action: 
       - service: script.play_radio
+  - id: radio_off
+    alias: Stop Radio
+    initial_state: on
+    trigger:
+      - platform: state
+        entity_id: input_boolean.play_radio
+        to: 'off'
+    action:
+      - service: media_player.turn_off
+        data:
+          entity_id: media_player.chromecast
   - id: radio_volume
     alias: 'Set Radio Volume'
+    initial_state: on
     trigger:
       platform: state
       entity_id: input_number.volume_radio
     action:
       service: media_player.volume_set
       data_template:
-        entity_id: media_player.woonkamer
+        entity_id: media_player.chromecast
         volume_level: '{{ states.input_number.volume_radio.state }}'

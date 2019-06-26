@@ -1,42 +1,45 @@
 light:
   - platform: rflink
-    automatic_add: true
-    device_defaults:
-      fire_event: true
-      signal_repetitions: 4
-        
-switch:
-  - platform: rflink
+    automatic_add: false
     device_defaults:
       fire_event: true
       signal_repetitions: 4
     devices:
       newkaku_02e0bc00_2:
-        name: Woonkamer TV
+        name: SwitchOne
+        type: switchable
       newkaku_02e0bc00_3:
         name: Woonkamer Bank
+        type: switchable
       newkaku_02e0bc00_4:
-        name: Woonkamer Hoek
+        name: SwitchTwo
+        type: switchable
+        
+switch:
+  - platform: rflink
+    automatic_add: true
+    device_defaults:
+      fire_event: true
+      signal_repetitions: 4
 
 group:
   lights_livingroom:
     name: Alle Lampen Woonkamer
     entities:
-      - switch.woonkamer_tv
-      - switch.woonkamer_bank
-      - switch.woonkamer_hoek
+      - light.living_room
+      - light.woonkamer_bank
   lights_livingroom_default:
     name: Lampen Woonkamer
     entities:
-      - switch.woonkamer_tv
-      - switch.woonkamer_bank
+      - light.stalamp
+      - light.woonkamer_bank
 
 automation:
   - id: light_evening
     alias: Light on in the evening
+    initial_state: off
     trigger:
       - event: sunset
-        offset: -01:00:00
         platform: sun
       - entity_id: group.tracked_people
         platform: state
@@ -45,9 +48,9 @@ automation:
       - condition: state
         entity_id: group.tracked_people
         state: home
-      - after: '16:00:00'
-        before: '23:00:00'
-        condition: time
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
     action:
-      service: switch.turn_on
+      service: light.turn_on
       entity_id: group.lights_livingroom_default

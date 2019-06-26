@@ -10,37 +10,57 @@ homeassistant:
       icon: mdi:airplane
     switch.guests:
       icon: mdi:human-male-female
-
   customize_glob:
-    "device_tracker.*":
+    device_tracker.*:
+      state_card_mode: badges
       templates:
-        theme: if (state === 'home') return 'home'; else if (state === 'Topicus') return 'topicus'; else return null;
+        theme: >
+          if (state) return state.toLowerCase(); else return null;
+
+person:
+  - name: Sander
+    id: sander
+    user_id: !secret his_user_id
+    device_trackers:
+      - device_tracker.his_phone
+  - name: Naomi
+    id: naomi
+    user_id: !secret her_user_id
+    device_trackers:
+      - device_tracker.her_phone
+  - name: Owen
+    id: owen
 
 device_tracker:
-  - platform: gpslogger
+  #- platform: gpslogger
   - platform: nmap_tracker
     hosts:
     - !secret ip_his
     - !secret ip_hers
     consider_home: 600
     interval_seconds: 15
-  - platform: upc_connect
-    host: !secret ip_router
-    consider_home: 180
-    interval_seconds: 10
+    
+input_select:
+  owen:
+    name: Waar is Owen
+    options:
+      - Thuis
+      - Oma
+      - Snoopy
+      - Anders
 
 group:
   # People states.
   people:
-    - device_tracker.his_phone
-    - device_tracker.her_phone
+    - person.sander
+    - person.naomi
     - switch.sleeping
     - switch.vacation
     - switch.guests
   # Tracked people (subset of device_tracker.all_devices).
   tracked_people:
-    - device_tracker.his_phone
-    - device_tracker.her_phone
+    - person.sander
+    - person.naomi
 
 switch:
   # Switch indicating sleeping.
@@ -70,12 +90,25 @@ switch:
     payload_on: "yes"
     payload_off: "no"
     retain: true
+    
+script:
+  leave_house:
+    alias: Verlaat huis
+    sequence:
+      - service: homeassistant.turn_off
+        entity_id:
+          - group.all_lights
+          - group.media
+      - service: script.speak
+        data:
+          message: 'Ik schakel alles uit, tot ziens'
 
 automation:
   
   # Automatically turn off all devices when away for more than 30 minutes
   - id: away_mode
     alias: Away Mode
+    initial_state: off
     trigger:
       platform: state
       entity_id: group.tracked_people
@@ -85,12 +118,13 @@ automation:
     action:
       - service: light.turn_off
         entity_id: group.all_lights
-      - service: switch.turn_off
-        entity_id: group.all_switches
+      - service: media_player.turn_off
+        entity_id: group.media
 
   # On vacation, make sure the thermostat is on "away" mode.
   - id: vacation_mode
     alias: Vacation started
+    initial_state: on
     trigger:
       platform: state
       entity_id: switch.vacation
@@ -104,6 +138,7 @@ automation:
   # If temperature meets a threshold, turn on the bedroom fan.
   - alias: Sleeping
     id: sleep_mode
+    initial_state: on
     trigger:
       platform: state
       entity_id: switch.sleeping
@@ -114,17 +149,19 @@ automation:
         state: 'off'
     action:
       - service: script.turn_on
-        entity_id: script.play_tts
-        data_template:
-          variables:
-            message: "Good night."
+        entity_id: script.speak
+        data:
+          message: "Good night."
       - service: light.turn_off
         entity_id: group.all_lights
+      - service: media_player.turn_off
+        entity_id: group.media
 
   # Sleep mode isn't always manually turned off in the morning.
   # Just turn it off automatically.
   - id: awake_mode
     alias: Turn off sleep mode automatically
+    initial_state: on
     trigger:
       platform: time
       at: '10:00:00'
@@ -141,6 +178,7 @@ automation:
   # enable vacation mode.
   - id: automatic_vacation_mode
     alias: automatic vacation mode
+    initial_state: on
     trigger:
       - platform: state
         entity_id: group.tracked_people
@@ -154,6 +192,7 @@ automation:
   # Turn off vacation mode as soon as anyone gets home.
   - id: turn_off_vacation_mode
     alias: turn off vacation mode
+    initial_state: on
     trigger:
       - platform: state
         entity_id: group.tracked_people

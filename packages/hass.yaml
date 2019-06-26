@@ -3,22 +3,34 @@
 #########################################
 
 panel_iframe:
-  configurator:
-    title: Configurator
-    icon: mdi:wrench
-    url: !secret url_configurator
-  pihole:
-    title: Pi-hole
-    icon: mdi:block-helper
-    url: !secret url_pihole
+  ide:
+    title: IDE
+    icon: mdi:cloud-tags
+    url: !secret url_ide
   calendar:
     title: Kalender
     icon: mdi:calendar
     url: !secret url_calendar
+  bitwarden:
+    title: Bitwarden
+    icon: mdi:safe
+    url: !secret url_bitwarden
 
 automation:
+
+  - alias: Set default theme on startup
+    initial_state: 'on'
+    trigger:
+    - platform: homeassistant
+      event: start
+    action:
+    - service: frontend.set_theme
+      data:
+        name: dark_theme
+
   - id: theme_automatic
     alias: Automatic Theme Change
+    initial_state: on
     trigger:
     - platform: homeassistant
       event: start
@@ -33,12 +45,15 @@ automation:
       data_template:
         name: "{% if states.sun.sun.state == \"above_horizon\" %}\n  light_green\n{%\
           \ else %}\n  midnight\n{% endif %}\n"
+
   - id: notify_update
     alias: Update Available Notifications
+    initial_state: on
     trigger:
       platform: state
       entity_id: updater.updater
     action:
-      service: notify.notify
+      service: notify.chrome_push
       data:
+        target: his_phone
         message: Update for Home Assistant is available.

@@ -1,98 +1,319 @@
 resources:
-  - url: /local/tracker-card.js?v=0.1.5
+  - url: /local/stylesheet.css?v=0.01
+    type: css
+    
+  - url: https://unpkg.com/moment@2.22.2/moment.js
     type: js
-  - url: /local/custom_ui/mini-media-player-bundle.js?v=0.9.2
+    
+  - url: /customcards/github/thomasloven/card-tools.js?track=true
+    type: js
+  - url: /customcards/github/thomasloven/card-modder.js?track=true
+    type: js
+  - url: /customcards/github/custom-cards/tracker-card.js?track=true
     type: module
-  - url: /local/custom_ui/weather-card.js
+    
+  - url: /customcards/github/maykar/lovelace-swipe-navigation.js?track=true&v=0.2
     type: js
-  - url: /local/custom-lovelace/group-card/group-card.js?v=0.0.2
+    
+  - url: /customcards/github/maykar/compact-custom-header.js?track=true
+    type: module
+    
+  - url: /customcards/custom_ui/mini-media-player-bundle.js?v=0.9.8
+    type: module
+  - url: /customcards/custom_ui/weather-card.js
     type: js
+  - url: /customcards/calendar-card.js?track=true
+    type: js
+  - url: /customcards/custom-lovelace/group-card/group-card.js?v=0.0.2
+    type: js
+    resources:
+  - url: /customcards/github/custom-cards/button-card.js?track=true
+    type: module
+  - url: /customcards/github/nervetattoo/simple-thermostat.js?track=true
+    type: module
+  - url: /customcards/github/thomasloven/popup-card.js?track=true
+    type: js
+  - url: /customcards/simple-weather-card.js?v=0.3.0
+    type: module
+    
+  - url: /local/atomic-calendar.js
+    type: module
 
 views:
+
   - title: Home
+    path: home
     icon: mdi:home-outline
-    badges:
-    - sun.sun
-    - device_tracker.his_phone
-    - device_tracker.her_phone
-    - sensor.yr_symbol
     cards:
-      - type: glance
-        title: Lights
-        show_state: false
+      - type: vertical-stack
+        cards:
+          - type: custom:simple-weather-card
+            entity: weather.buienradar
+            name: "Apeldoorn"
+            backdrop: false
+          - type: horizontal-stack
+            cards:
+              - type: 'custom:card-modder'
+                style:
+                  overflow: hidden
+                card:
+                  type: picture-elements
+                  image: /local/images/naomi_small.png
+                  elements:
+                    # Image
+                    - type: image
+                      entity: person.naomi
+                      image: /local/images/naomi_small.png
+                      tap_action:
+                        action: more-info
+                      style:
+                        left: 50%
+                        top: 50%
+                        width: 100%
+                        heigth: 100%
+                      state_image:
+                        "home": /local/images/naomi_small.png
+                    # State Label Naomi
+                    - type: state-label
+                      entity: person.naomi
+                      style:
+                        left: 0
+                        bottom: 0
+                        pointer-events: none
+                        font-size: 16px
+                        line-height: 24px
+                        color: white
+                        background-color: rgba(0, 0, 0, 0.3)
+                        width: 100%
+                        transform: initial
+                        padding: 0 8px
+              - type: 'custom:card-modder'
+                style:
+                  overflow: hidden
+                card:
+                  type: picture-elements
+                  image: /local/images/sander_small.png
+                  elements:
+                    # Image
+                    - type: image
+                      entity: person.sander
+                      image: /local/images/sander_small.png
+                      tap_action:
+                        action: more-info
+                      style:
+                        left: 50%
+                        top: 50%
+                        width: 100%
+                        heigth: 100%
+                      state_image:
+                        "home": /local/images/sander_small.png
+                    # State Label Sander
+                    - type: state-label
+                      entity: person.sander
+                      style:
+                        left: 0
+                        bottom: 0
+                        pointer-events: none
+                        font-size: 16px
+                        line-height: 24px
+                        color: white
+                        background-color: rgba(0, 0, 0, 0.3)
+                        width: 100%
+                        transform: initial
+                        padding: 0 8px
+
+      - type: entities
+        show_header_toggle: false
         entities:
-          - entity: switch.woonkamer_tv
-            name: TV
-            icon: mdi:lightbulb
-            tap_action: toggle
-          - entity: switch.woonkamer_bank
-            name: Bank rechts
-            icon: mdi:desk-lamp
-            tap_action: toggle
-          - entity: switch.woonkamer_hoek
-            name: Hoek
-            icon: mdi:desk-lamp
-            tap_action: toggle
+          - entity: input_select.owen
+            name: Owen
+            icon: mdi:baby
+
+      # Alles uitschakelen bij vertrek naar werk
       - type: conditional
         conditions:
-          - entity: media_player.horizon
-            state_not: off
-          - entity: media_player.horizon
-            state_not: unavailable
+          - entity: binary_sensor.morning
+            state: "on"
+        card:
+          type: glance
+          show_state: false
+          entities:
+            - entity: script.leave_house
+              name: Alles uitschakelen
+
+      - type: horizontal-stack
+        cards:
+          - type: 'custom:button-card'
+            entity: media_player.laptop
+            icon: mdi:laptop
+          - type: 'custom:button-card'
+            entity: group.lights_livingroom
+            icon: mdi:lightbulb
+            name: Avond
+          - type: 'custom:button-card'
+            entity: scene.night
+            icon: mdi:weather-night
+              
+      # Snelkoppelingen van lampen & laptop
+      - type: glance
+        show_state: true
+        entities:
+          - entity: light.stalamp
+            name: Stalamp
+            icon: mdi:floor-lamp
+            tap_action:
+              action: toggle
+          - entity: light.woonkamer_bank
+            name: TV
+            icon: mdi:desk-lamp
+            tap_action:
+              action: toggle
+          - entity: light.hoek
+            name: Hoek
+            icon: mdi:desk-lamp
+            tap_action:
+              action: toggle
+
+      - type: entities
+        title: Afvalkalender
+        show_header_toggle: false
+        entities:
+          - sensor.circulus_berkel_restafval
+          - sensor.circulus_berkel_papier
+          - sensor.circulus_berkel_gft
+              
+      # Nieuws afspelen, alleen 's ochtends'
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.morning
+            state: "on"
+        card:
+          type: glance
+          entities:
+            - entity: switch.news_rtl
+              name: RTL
+              icon: mdi:newspaper
+            - entity: switch.news_nos
+              name: NOS
+              icon: mdi:newspaper
+
+      # Als mediabox aanstaat, deze hier tonen om te bedienen
+      - type: conditional
+        conditions:
+          - entity: media_player.mediabox
+            state_not: 'off'
+          - entity: media_player.mediabox
+            state_not: 'unavailable'
         card:
           type: media-control
-          entity: media_player.horizon
+          entity: media_player.mediabox
+          
+      # Receiver
       - type: custom:mini-media-player
-        title: Harman Kardon
-        entity: media_player.harman_kardon_avr
+        entity: media_player.receiver
         icon: mdi:surround-sound
-        artwork_border: true
-        show_source: true
+        hide:
+          artwork_border: false
+          power_state: false
         volume_stateless: true
-        
+
+  # - title: Deurbel
+  #   path: doorbell
+  #   icon: mdi:doorbell-video
+  #   cards:
+  #     - !include lovelace/cards/ring.yaml
+
+  # Alles wat met media te maken heeft
   - title: Media
+    path: media
     icon: mdi:cellphone-link
     cards:
       - type: entities
         title: Woonkamer
         entities:
+          - entity: media_player.laptop
+            icon: mdi:laptop
+            type: custom:mini-media-player
+            group: true
+            hide:
+              power_state: false
+              controls: true
+              source: true
+              volume: true
+          - entity: media_player.googlehome
+            type: custom:mini-media-player
+            icon: mdi:google-assistant
+            group: true
+            hide:
+              power_state: false
+              controls: true
+              source: true
+              volume: true
+            tts:
+              platform: google
           - entity: media_player.receiver
             type: custom:mini-media-player
             icon: mdi:surround-sound
             group: true
-            hide_controls: true
-            show_source: true
+            hide:
+              power_state: false
+              controls: true
             volume_stateless: true
-            power_color: true
-          - entity: media_player.horizon
+          - entity: media_player.mediabox
             type: custom:mini-media-player
             icon: mdi:television-box
-            show_source: true
-            hide_volume: true
-            hide_mute: true
             group: true
-            power_color: true
-          - entity: media_player.living_room_tv
+            hide:
+              power_state: false
+              volume: true
+              mute: true
+          - entity: media_player.television
             type: custom:mini-media-player
             icon: mdi:television
-            hide_controls: true
             group: true
-            power_color: true
-            hide_volume: true
-          - entity: media_player.xboxone
+            hide:
+              power_state: false
+              volume: true
+          - entity: media_player.xbox
             icon: mdi:xbox
             type: custom:mini-media-player
-            hide_controls: true
-            show_source: true
             group: true
-            power_color: true
-            hide_volume: true
+            hide:
+              power_state: false
+              volume: true
+              controls: true
             
       - type: media-control
         entity: media_player.spotify
   
+  # Climate
+  - title: Klimaat
+    path: climate
+    icon: mdi:thermostat
+    cards:
+      - type: 'custom:simple-thermostat'
+        entity: climate.downstairs
+        step_size: 1
+        sensors:
+          - entity: sensor.downstairs_thermostat_humidity
+            name: Humidity
+  
+  - title: Kalender
+    path: calendar
+    icon: mdi:calendar
+    cards:
+      - type: custom:atomic-calendar
+        title: "Kalender"
+        entities:
+        - entity: calendar.calendar
+        - entity: calendar.soccer
+          color: red
+        fullDayEventText: 'Hele dag'
+        untilText: 'Tot'
+  
+  # Weer
   - title: Overig
-    garage_door_tilt_sensor_alarm_level: Weather
+    path: other
     cards:
       - type: custom:weather-card
         entity_weather: weather.buienradar
@@ -102,13 +323,10 @@ views:
           title: Wie is waar
           type: entities
         group: group.tracked_people
-      - type: custom:group-card
-        title:
-        card:
-          type: glance
-        group: group.trains
-          
+  
+  # Configuratie items
   - title: Configuration
+    path: configuration
     icon: mdi:settings
     cards:
       - type: custom:tracker-card

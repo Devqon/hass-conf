@@ -1,0 +1,12 @@
+media_player:
+  - platform: kodi
+    host: !secret ip_kodi
+    username: !secret kodi_username
+    password: !secret kodi_password
+    turn_on_action:
+      service: script.turn_on_computer
+    turn_off_action:
+      service: media_player.kodi_call_method
+      data:
+        entity_id: media_player.kodi
+        method: System.Hibernate

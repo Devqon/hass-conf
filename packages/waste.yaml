@@ -1,6 +1,29 @@
+homeassistant:
+  customize:
+    sensor.circulus_berkel_restafval:
+      friendly_name: Restafval
+    sensor.circulus_berkel_papier:
+      friendly_name: Papier
+    sensor.circulus_berkel_gft:
+      friendly_name: GFT
+
+sensor:
+  - platform: afvalbeheer
+    wastecollector: Circulus-Berkel
+    resources:
+      - restafval
+      - gft
+      - papier
+    postcode: !secret home_zipcode
+    streetnumber: !secret home_housenumber
+    upcomingsensor: 1
+    dateformat: '%d %b'
+    dateonly: 0
+
 automation:
   - id: notification_waste
     alias: Waste Container Warning
+    initial_state: on
     trigger:
       platform: time
       at: '20:00:00'
@@ -9,6 +32,6 @@ automation:
       value_template: "{%- if (as_timestamp(now()) > (as_timestamp(state_attr('calendar.calendar_waste', 'start_time'))\
         \ - 86400)) -%}\n  true\n{%- endif -%}"
     action:
-      service: notify.notify
+      service: notify.chrome_push_his_phone
       data:
-        message: "[INFO] Morgen wordt er {{ state_attr('calendar.calendar_waste', 'description') }} opgehaald!"
+        message: "[INFO] Morgen; {{ state_attr('calendar.calendar_waste', 'message') }}!"

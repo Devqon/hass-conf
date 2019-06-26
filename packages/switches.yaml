@@ -1,0 +1,13 @@
+switch:
+  - platform: template
+    switches:
+      news_rtl:
+        value_template: "{{ True }}"
+        turn_on:
+          - service: script.watch_news_rtl
+        turn_off:
+      news_nos:
+        value_template: "{{ True }}"
+        turn_on:
+          - service: script.watch_news_nos
+        turn_off:

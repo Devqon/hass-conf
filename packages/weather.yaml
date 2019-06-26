@@ -4,3 +4,12 @@ sensor:
 weather:
   - platform: buienradar
     name: Buienradar
+
+binary_sensor:
+  - platform: template
+    sensors:
+      hot_outside:
+        friendly_name: "Heet buiten"
+        value_template: >-
+          {{ states.weather.buienradar.attributes.temperature > 25
+             or (now().hour > 18 and states.weather.buienradar.attributes.temperature > 18) }}

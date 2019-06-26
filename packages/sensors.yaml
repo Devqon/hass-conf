@@ -1,0 +1,20 @@
+sensor:
+  - platform: time_date
+    display_options:
+      - 'time'
+      
+binary_sensor:
+  - platform: template
+    sensors:
+      morning:
+        friendly_name: Ochtend
+        entity_id: sensor.time
+        value_template: >
+           {% set ct = now().hour + now().minute/60 + now().second/3600 %}
+           {{ 6 <= ct <= 9 }}
+      evening:
+        friendly_name: Avond
+        entity_id: sensor.time
+        value_template: >
+           {% set ct = now().hour + now().minute/60 + now().second/3600 %}
+           {{ 17 <= ct <= 24 }} we

@@ -1,15 +1,15 @@
-- cal_id: !secret calendar_soccer
-  entities:
-  - device_id: soccer
-    ignore_availability: true
-    name: Voetbal
-    track: true
-
 - cal_id: !secret calendar_personal
   entities:
   - device_id: calendar
     ignore_availability: true
     name: Kalender
+    track: true
+
+- cal_id: !secret calendar_soccer
+  entities:
+  - device_id: soccer
+    ignore_availability: true
+    name: Voetbal
     track: true
 
 - cal_id: nl.dutch#holiday@group.v.calendar.google.com
@@ -18,16 +18,3 @@
     ignore_availability: true
     name: Feestdagen in Nederland
     track: false
-
-- cal_id: !secret calendar_waste
-  entities:
-  - device_id: calendar_waste
-    ignore_availability: true
-    name: Afval
-    track: true
-- cal_id: '#contacts@group.v.calendar.google.com'
-  entities:
-  - device_id: contacts
-    ignore_availability: true
-    name: Contacts
-    track: true

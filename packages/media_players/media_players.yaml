@@ -1,0 +1,171 @@
+###############################################################################
+# Media Players
+###############################################################################
+homeassistant:
+  customize:
+
+    media_player.receiver:
+      friendly_name: Receiver
+    media_player.television:
+      friendly_name: TV
+    media_player.mediabox:
+      friendly_name: STB
+    media_player.xbox:
+      friendly_name: Xbox One
+
+wake_on_lan:
+
+binary_sensor:
+  - platform: ping
+    name: ping_avr
+    host: !secret ip_avr
+  - platform: ping
+    name: ping_laptop
+    host: !secret ip_laptop
+
+media_player:
+
+  # The samsung tv platform itself
+  - platform: samsungtv
+    name: television_dummy
+    host: !secret ip_samsung_tv
+    mac: !secret mac_samsung_tv
+
+  # Use the universal instead, to control the 'on' command
+  - platform: universal
+    name: Television
+    children:
+      - media_player.television_dummy
+    commands:
+      turn_on:
+        service: script.turn_on_television
+      turn_off:
+        service: script.turn_off_television
+
+  - platform: xboxone
+    name: Xbox One
+    device: !secret xbox_id
+
+  - platform: horizon_custom_onoff
+    name: Mediabox
+    host: !secret ip_horizon
+
+  - platform: spotify
+    name: Spotify
+    client_id: !secret spotify_client_id
+    client_secret: !secret spotify_client_secret
+
+  - platform: universal
+    name: Laptop
+    commands:
+      turn_on:
+        service: script.turn_on_computer
+      turn_off:
+        service: shell_command.laptop_hibernate
+    attributes:
+      state: binary_sensor.ping_laptop
+
+cast:
+
+sensor:
+
+  - platform: template
+    sensors:
+      living_room_source:
+        value_template: "{{ state_attr('media_player.receiver', 'source') }}"
+
+###############################################################################
+# Groups
+###############################################################################
+group:
+
+  media:
+    name: Media
+    entities:
+      - media_player.mediabox
+      - media_player.xbox
+      - media_player.receiver
+      - media_player.spotify
+      - media_player.television
+
+shell_command:
+  laptop_shutdown: !secret curl_laptop_shutdown
+  laptop_restart: !secret curl_laptop_restart
+  laptop_sleep: !secret curl_laptop_sleep
+  laptop_hibernate: !secret curl_laptop_hibernate
+
+###############################################################################
+# Scripts
+###############################################################################
+script:
+
+  turn_on_television:
+    alias: "Turn on television only when off"
+    sequence:
+      - condition: state
+        entity_id: media_player.television
+        state: 'off'
+      - service: switch.turn_on
+        data:
+          entity_id: switch.tv
+
+  turn_off_television:
+    alias: "Turn off television only when on"
+    sequence:
+      - condition: state
+        entity_id: media_player.television
+        state: 'on'
+      - service: switch.turn_off
+        data:
+          entity_id: switch.tv
+
+  turn_on_media_basic:
+    alias: "Start TV and Receiver"
+    sequence:
+      - service: media_player.turn_on
+        entity_id: media_player.chromecast
+      
+  turn_on_computer:
+    alias: "Start Computer"
+    sequence:
+      - service: wake_on_lan.send_magic_packet
+        data:
+          mac: !secret mac_laptop
+      - service: media_player.turn_on
+        data:
+          entity_id: media_player.television
+      - delay: "00:00:05"
+      - service: switch.turn_on
+        data:
+          entity_id: switch.avr_source_disc
+
+  watch_news_nos:
+    alias: "NOS Nieuws kijken"
+    sequence:
+      - service: script.turn_on_media_basic
+      - service: media_player.turn_on
+        entity_id: media_player.mediabox
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.receiver
+          source: 'STB'
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.mediabox
+          source: 'NPO 1'
+
+  turn_on_xboxone:
+    alias: "Start Xbox One"
+    sequence:
+      - service: script.turn_on_media_basic
+      - service: media_player.turn_on
+        entity_id: media_player.xbox
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.receiver
+          source: 'XBOX'
+
+###############################################################################
+# Automations
+###############################################################################
+automation:

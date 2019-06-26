@@ -3,7 +3,7 @@
 !*.yaml
 !.gitignore
 !packages/
-!floorplan/
+!packages/media_players/
 *.conf
 *.txt
 *.log

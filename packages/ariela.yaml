@@ -1,0 +1,20 @@
+sensor:
+  - platform: mqtt
+    name: his_phone_call_state
+    state_topic: 'homeassistant/sensor/android_his_phone_callstate/state'
+    value_template: '{{value_json.state}}'
+    json_attributes:
+      - icon
+      
+  - platform: mqtt
+    name: his_phone_steps
+    state_topic: 'homeassistant/sensor/android_his_phone_steps/state'
+    unit_of_measurement: 'steps'
+    value_template: '{{value_json.steps}}'
+    json_attributes:
+      - sensor_name
+      - vendor
+      - version
+      - power
+      - resolution
+      - max_range

@@ -1,0 +1,12 @@
+scene:
+  - name: Night
+    entities:
+      switch.sleeping: true
+      group.lights_livingroom: off
+  - name: Evening
+    entities:
+      group.lights_livingroom:
+        state: on
+        rgb_color: [243,179,80]
+        brightness: 144
+        transition: 3
