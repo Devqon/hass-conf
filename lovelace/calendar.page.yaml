@@ -1,0 +1,8 @@
+- type: custom:atomic-calendar
+  title: "Kalender"
+  entities:
+  - entity: calendar.calendar
+  - entity: calendar.soccer
+    color: red
+  fullDayEventText: 'Hele dag'
+  untilText: 'Tot'

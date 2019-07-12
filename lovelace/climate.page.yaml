@@ -1,0 +1,38 @@
+- type: horizontal-stack
+  cards:
+    - type: custom:mini-graph-card
+      entities:
+        - sensor.downstairs_thermostat_temperature
+      name: Woon
+      line_color: blue
+      line_width: 8
+      font_size: 75
+    - type: custom:mini-graph-card
+      entities:
+        - sensor.downstairs_thermostat_humidity
+      name: Woon
+      line_color: green
+      line_width: 8
+      font_size: 75
+- type: horizontal-stack
+  cards:
+    - type: custom:mini-graph-card
+      entities:
+        - sensor.bedroom_temperature
+      name: Boven
+      line_color: '#e74c3c'
+      line_width: 8
+      font_size: 75
+    - type: custom:mini-graph-card
+      entities:
+        - sensor.bedroom_humidity
+      name: Boven
+      line_color: var(--accent-color)
+      line_width: 8
+      font_size: 75
+- type: 'custom:simple-thermostat'
+  entity: climate.downstairs
+  step_size: 1
+  sensors:
+    - entity: sensor.downstairs_thermostat_humidity
+      name: Humidity

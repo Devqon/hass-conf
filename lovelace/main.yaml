@@ -1,0 +1,88 @@
+resources:
+  - url: /local/stylesheet.css?v=0.01
+    type: css
+    
+  - url: https://unpkg.com/moment@2.22.2/moment.js
+    type: js
+    
+  - url: /community_plugin/lovelace-card-tools/card-tools.js
+    type: js
+  - url: /community_plugin/lovelace-card-mod/card-mod.js
+    type: module
+
+  - url: /community_plugin/compact-custom-header/compact-custom-header.js
+    type: module
+    
+  - url: /community_plugin/mini-media-player/mini-media-player.js
+    type: module
+  - url: /community_plugin/weather-card/weather-card.js
+    type: module
+  - url: /customcards/calendar-card.js?track=true
+    type: js
+  - url: /community_plugin/group-card/group-card.js
+    type: js
+  - url: /community_plugin/button-card/button-card.js
+    type: module
+  - url: /community_plugin/simple-thermostat/simple-thermostat.js
+    type: module
+  - url: /community_plugin/lovelace-popup-card/popup-card.js
+    type: js
+  - url: /community_plugin/simple-weather-card/simple-weather-card.js
+    type: module
+  - url: /community_plugin/mini-graph-card/mini-graph-card.js
+    type: module
+    
+  - url: /community_plugin/atomic_calendar/atomic_calendar.js
+    type: module
+
+cch:
+  swipe: true
+  swipe_animate: swipe
+
+views:
+
+  - title: Home
+    path: home
+    icon: mdi:home-outline
+    cards:
+      !include home.page.yaml
+
+  # - title: Deurbel
+  #   path: doorbell
+  #   icon: mdi:doorbell-video
+  #   cards:
+  #     !include doorbell.page.yaml
+
+  # All media
+  - title: Media
+    path: media
+    icon: mdi:cellphone-link
+    cards:
+      !include media.page.yaml
+  
+  # Climate
+  - title: Klimaat
+    path: climate
+    icon: mdi:thermostat
+    cards:
+      !include climate.page.yaml
+  
+  # Calendar
+  - title: Kalender
+    path: calendar
+    icon: mdi:calendar
+    cards:
+      !include calendar.page.yaml
+  
+  # Other
+  - title: Overig
+    path: other
+    cards:
+      !include other.page.yaml
+  
+  # Configuratie items
+  - title: Configuration
+    path: configuration
+    icon: mdi:settings
+    cards:
+      !include config.page.yaml
