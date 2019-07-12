@@ -1,0 +1,7 @@
+- type: custom:weather-card
+  entity: weather.buienradar
+- type: custom:group-card
+  card:
+    title: Wie is waar
+    type: entities
+  group: group.tracked_people

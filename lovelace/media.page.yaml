@@ -1,0 +1,80 @@
+- type: entities
+  title: Woonkamer
+  entities:
+    - entity: media_player.laptop
+      icon: mdi:laptop
+      type: custom:mini-media-player
+      group: true
+      hide:
+        power_state: false
+        controls: true
+        source: true
+        volume: true
+    - entity: media_player.googlehome
+      type: custom:mini-media-player
+      icon: mdi:google-assistant
+      group: true
+      hide:
+        power_state: false
+        controls: true
+        source: true
+        volume: true
+      tts:
+        platform: google
+    - entity: media_player.receiver
+      type: custom:mini-media-player
+      icon: mdi:surround-sound
+      group: true
+      hide:
+        power_state: false
+        controls: true
+      volume_stateless: true
+      shortcuts:
+        columns: 4
+        buttons:
+          - icon: mdi:laptop
+            type: script
+            id: script.turn_on_media_player
+            data:
+              entity_id: disc
+          - icon: mdi:television-box
+            type: script
+            id: script.turn_on_media_player
+            data:
+              entity_id: stb
+          - icon: mdi:xbox
+            type: script
+            id: script.turn_on_media_player
+            data:
+              entity_id: game
+          - icon: mdi:cast
+            type: script
+            id: script.turn_on_media_player
+            data:
+              entity_id: server
+    - entity: media_player.mediabox
+      type: custom:mini-media-player
+      icon: mdi:television-box
+      group: true
+      hide:
+        power_state: false
+        volume: true
+        mute: true
+    - entity: media_player.television
+      type: custom:mini-media-player
+      icon: mdi:television
+      group: true
+      hide:
+        power_state: false
+        volume: true
+    - entity: media_player.xbox_one
+      icon: mdi:xbox
+      type: custom:mini-media-player
+      group: true
+      hide:
+        power_state: false
+        volume: true
+        controls: true
+      
+- type: media-control
+  entity: media_player.spotify
